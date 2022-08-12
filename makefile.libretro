@@ -470,17 +470,19 @@ endif
 
 SOURCES_CXX += $(GRIFFIN_CXXSRCFILES) $(filter-out $(BURN_BLACKLIST),$(foreach dir,$(FBA_SRC_DIRS),$(wildcard $(dir)/*.cpp)))
 SOURCES_CXX += $(LIBRETRO_DIR)/libretro.cpp
+SOURCES_AS = $(FBA_CPU_DIR)/cyclone.S
 SOURCES_C += $(filter-out $(BURN_BLACKLIST),$(foreach dir,$(FBA_SRC_DIRS),$(wildcard $(dir)/*.c)))
 
 FBA_CXXOBJ := $(SOURCES_CXX:.cpp=.o)
 FBA_COBJ := $(SOURCES_C:.c=.o)
+FBA_ASOBJ := $(SOURCES_AS:.S=.o)
 
 ifeq ($(platform), wii)
 FBA_SSRCS := $(filter-out $(BURN_BLACKLIST),$(foreach dir,$(FBA_SRC_DIRS),$(wildcard $(dir)/*.S)))
 FBA_SOBJ := $(FBA_SSRCS:.S=.o)
 OBJS := $(FBA_SOBJ) $(FBA_COBJ) $(FBA_CXXOBJ)
 else
-OBJS := $(FBA_COBJ) $(FBA_CXXOBJ)
+OBJS := $(FBA_ASOBJ) $(FBA_COBJ) $(FBA_CXXOBJ)
 endif
 
 FBA_DEFINES += -DUSE_SPEEDHACKS -D__LIBRETRO__ \
@@ -518,8 +520,8 @@ ifeq ($(DEBUG), 1)
    CFLAGS += -O0 -g
    CXXFLAGS += -O0 -g
 else
-   CFLAGS += -O2 -DNDEBUG
-   CXXFLAGS += -O2 -DNDEBUG
+   CFLAGS += -O3 -DNDEBUG
+   CXXFLAGS += -O3 -DNDEBUG
 endif
 
 ifeq ($(platform), sncps3)
