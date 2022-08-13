@@ -5,6 +5,9 @@
 #include <vector>
 #include <string>
 
+//AKI
+#include <3ds.h>
+
 #ifdef WANT_NEOGEOCD
 #include "cd/cd_interface.h"
 #endif
@@ -68,10 +71,10 @@ static INT32 __cdecl libretro_bprintf(INT32 nStatus, TCHAR* szFormat, ...)
          retro_log = RETRO_LOG_WARN;
       else if (nStatus == PRINT_ERROR)
          retro_log = RETRO_LOG_ERROR;
-         
+
       log_cb(retro_log, bprintf_buf);
    }
-   
+
    return rc;
 }
 
@@ -546,7 +549,7 @@ void set_neo_system_bios()
             NeoSystem |= available_aes_bios->NeoSystem;
             log_cb(RETRO_LOG_WARN, "AES Neo Geo Mode selected but AES bios not available => fall back to another: 0x%02x (%s [0x%08x] (%s)).\n", NeoSystem, available_aes_bios->filename, available_aes_bios->crc, available_aes_bios->friendly_name);
          }
-      }      
+      }
    }
    else if (g_opt_neo_geo_mode == NEO_GEO_MODE_UNIBIOS)
    {
@@ -694,7 +697,7 @@ void InpDIPSWResetDIPs (void)
 		{
 			pgi = GameInp + bdi.nInput + nDIPOffset;
 			if (pgi)
-				pgi->Input.Constant.nConst = (pgi->Input.Constant.nConst & ~bdi.nMask) | (bdi.nSetting & bdi.nMask);	
+				pgi->Input.Constant.nConst = (pgi->Input.Constant.nConst & ~bdi.nMask) | (bdi.nSetting & bdi.nMask);
 		}
 		i++;
 	}
@@ -710,7 +713,7 @@ static int InpDIPSWInit(void)
    struct GameInp *pgi;
 
    const char * drvname = BurnDrvGetTextA(DRV_NAME);
-   
+
    if (!drvname)
       return 0;
 
@@ -811,7 +814,7 @@ static int InpDIPSWInit(void)
 
             values_count++;
          }
-         
+
          if (bdi.nSetting > values_count)
          {
             // Truncate the list at the values_count found to not have empty values
@@ -879,7 +882,7 @@ static void evaluate_neogeo_bios_mode(const char* drvname)
                break;
             }
          }
-      }      
+      }
    }
 
    if (is_neogeo_needs_specific_bios)
@@ -889,7 +892,7 @@ static void evaluate_neogeo_bios_mode(const char* drvname)
 
       // set the NeoGeo mode to DIPSWITCH to rely on the Default Bios Dipswitch
       g_opt_neo_geo_mode = NEO_GEO_MODE_DIPSWITCH;
-   }   
+   }
 }
 
 static void set_controller_infos()
@@ -946,7 +949,7 @@ static void set_environment()
 
    options = (struct retro_core_option_definition*)calloc(
          nbr_options + nbr_dips + 1, sizeof(struct retro_core_option_definition));
-   
+
    int idx_option = 0;
 
    // Add the System core options
@@ -1116,10 +1119,10 @@ end:
 static bool apply_dipswitch_from_variables()
 {
    bool dip_changed = false;
-   
+
    log_cb(RETRO_LOG_INFO, "Apply DIP switches value from core options.\n");
    struct retro_variable var = {0};
-   
+
    for (int dip_idx = 0; dip_idx < dipswitch_core_options.size(); dip_idx++)
    {
       dipswitch_core_option *dip_option = &dipswitch_core_options[dip_idx];
@@ -1212,8 +1215,8 @@ static int find_rom_by_name(char *name, const ZipEntry *list, unsigned elems)
 	unsigned i = 0;
 	for (i = 0; i < elems; i++)
    {
-      if(!strcmp(list[i].szName, name)) 
-         return i; 
+      if(!strcmp(list[i].szName, name))
+         return i;
    }
 
 #if 0
@@ -1237,7 +1240,7 @@ static int find_rom_by_crc(uint32_t crc, const ZipEntry *list, unsigned elems)
 #if 0
    log_cb(RETRO_LOG_ERROR, "Not found: 0x%X (crc: 0x%X)\n", list[i].nCrc, crc);
 #endif
-   
+
    return -1;
 }
 
@@ -1329,7 +1332,7 @@ static bool open_archive()
 #endif
 
 	g_find_list_path.clear();
-	
+
 	// Check if we have said archives.
 	// Check if archives are found. These are relative to g_rom_dir.
 	char *rom_name;
@@ -1397,7 +1400,7 @@ static bool open_archive()
 			if (index < 0)
 			{
 				log_cb(RETRO_LOG_WARN, "[FBA] Searching ROM at index %d with CRC 0x%08x and name %s => Not Found\n", i, g_find_list[i].ri.nCrc, rom_name);
-               continue;              
+               continue;
             }
 
             if (bad_crc)
@@ -1405,7 +1408,7 @@ static bool open_archive()
 
 #if 0
             log_cb(RETRO_LOG_INFO, "[FBA] Searching ROM at index %d with CRC 0x%08x and name %s => Found\n", i, g_find_list[i].ri.nCrc, rom_name);
-#endif                          
+#endif
             // Search for the best bios available by category
             if (is_neogeo_game)
             {
@@ -1499,6 +1502,8 @@ void retro_init()
    else
       log_cb = log_dummy;
 
+//AKI
+//   APT_SetAppCpuTimeLimit(80);
    BurnLibInit();
 
    frameskip_type             = 0;
@@ -1869,7 +1874,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    int width, height;
    BurnDrvGetVisibleSize(&width, &height);
    struct retro_game_geometry geom = { (unsigned)width, (unsigned)height, (unsigned)width, (unsigned)height };
-   
+
    int game_aspect_x, game_aspect_y;
    BurnDrvGetAspect(&game_aspect_x, &game_aspect_y);
 
@@ -3297,7 +3302,7 @@ INT32 GameInpSpecialOne(struct GameInp* pgi, INT32 nPlayer, char* szi, char *szn
 			GameInpDigital2RetroInpKey(pgi, nPlayer, RETRO_DEVICE_ID_JOYPAD_L, description);
 		}
 	}
-	
+
 	// Fix part of issue #102 (SDI - Strategic Defense Initiative)
 	if ((parentrom && strcmp(parentrom, "sdi") == 0) ||
 		(drvname && strcmp(drvname, "sdi") == 0)
@@ -3312,7 +3317,7 @@ INT32 GameInpSpecialOne(struct GameInp* pgi, INT32 nPlayer, char* szi, char *szn
 			GameInpDigital2RetroInpKey(pgi, nPlayer, RETRO_DEVICE_ID_JOYPAD_R, description);
 		}
 	}
-	
+
 	// Fix part of issue #102 (Forgotten Worlds)
 	if ((parentrom && strcmp(parentrom, "forgottn") == 0) ||
 		(drvname && strcmp(drvname, "forgottn") == 0)
@@ -3614,4 +3619,3 @@ INT32 GameInpDefault()
 
 	return 0;
 }
-
